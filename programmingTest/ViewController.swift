@@ -7,13 +7,14 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     
     @IBOutlet weak var tableView: UITableView!
     
-    var wordList = [String]()
+    var wordList:[NSDictionary] = []
     
     var label = UILabel()
     
@@ -25,11 +26,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.delegate = self
         tableView.dataSource = self
         
-        wordList = ["test", "test2", "test3"]
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        readWords()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -37,10 +34,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        //let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = UITableViewCell()
         
-        label = cell.contentView.viewWithTag(1) as! UILabel
-        label.text = wordList[indexPath.row]
+        let dic = wordList[indexPath.row]
+        cell.textLabel?.text = dic["title"] as! String
         
         return cell
     }
@@ -56,6 +54,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let DetailVC = segue.destination as! DetailViewController
             
             DetailVC.selectedNumber = count
+        }
+    }
+    
+    func readWords() {
+        //AppDelegateのインスタンス化
+        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        let manageContext = appDelegate.persistentContainer.viewContext
+        
+        //取り出し
+        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
+        
+        do {
+            let fetchResults = try manageContext.fetch(fetchRequest)
+            
+            for result in fetchResults {
+                //1件ずつ取り出し
+                let title:String? = result.value(forKey: "title") as? String
+                let detail:String? = result.value(forKey: "detail") as? String
+                
+                let dic = ["title":title, "detail":detail] as [String: Any]
+                
+                wordList.append(dic as NSDictionary)
+                print(wordList)
+                print(result)
+            }
+        } catch {
+            print("read error", error)
         }
     }
 }

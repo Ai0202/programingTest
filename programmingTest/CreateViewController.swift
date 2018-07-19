@@ -43,6 +43,12 @@ class CreateViewController: UIViewController {
         
         newRecord.setValue(titleText, forKey: "title")
         newRecord.setValue(detailText, forKey: "detail")
+        
+        do {
+            try manageContext.save()
+        } catch {
+            print("error", error)
+        }
     }
 
 }

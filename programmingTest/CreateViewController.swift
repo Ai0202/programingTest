@@ -22,6 +22,9 @@ class CreateViewController: UIViewController {
     
     @IBAction func tapDoneBtn(_ sender: Any) {
         create()
+        
+        //一つの前の画面に戻る
+        self.navigationController?.popViewController(animated: true)
     }
     
     func create() {

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class DetailViewController: UIViewController {
 
@@ -15,9 +16,19 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(selectedNumber)
-
+//        let selectedWord = getSelectedWord()
+        
+//        print(selectedWord)
     }
-
+    
+    func getSelectedWord() {
+        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        let manageContext = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
+        
+        
+    }
 
 }

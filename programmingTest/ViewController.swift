@@ -26,7 +26,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.delegate = self
         tableView.dataSource = self
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         readWords()
+        
+        tableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -49,6 +56,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         performSegue(withIdentifier: "detail", sender: nil)
     }
     
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let dic = wordList[indexPath.row]
+            let title = dic["title"] as! String
+            
+            //CoreDataから削除
+            deleteWord(title: title)
+            
+            //表示用の配列の削除
+            wordList.remove(at: indexPath.row)
+            
+            //行が消える
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "detail" {
             let DetailVC = segue.destination as! DetailViewController
@@ -69,7 +92,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         do {
             let fetchResults = try manageContext.fetch(fetchRequest)
             
+            wordList = []
+            
             for result in fetchResults {
+                
                 //1件ずつ取り出し
                 let title:String? = result.value(forKey: "title") as? String
                 let detail:String? = result.value(forKey: "detail") as? String
@@ -82,6 +108,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         } catch {
             print("read error", error)
+        }
+    }
+
+    func deleteWord(title:String) {
+        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        let manageContext = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title = %@", title)
+        
+        fetchRequest.predicate = predicate
+        
+        do {
+            let fetchResults = try manageContext.fetch(fetchRequest)
+            
+            for result in fetchResults {
+//                let title:String? = result.value(forKey: "title") as? String
+//                let detail:String? = result.value(forKey: "detail") as? String
+                
+                manageContext.delete(result)
+            }
+            try manageContext.save() //削除した状態を保存
+        } catch {
+            print("read error:", error)
         }
     }
 }

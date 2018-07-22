@@ -14,6 +14,8 @@ class CheckViewController: UIViewController {
         super.viewDidLoad()
 
     }
+    
+    
 
 
 }

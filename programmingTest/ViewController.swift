@@ -45,7 +45,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let cell = UITableViewCell()
         
         let dic = wordList[indexPath.row]
-        cell.textLabel?.text = dic["title"] as! String
+        cell.textLabel?.text = dic["title"] as? String
         
         return cell
     }
@@ -103,8 +103,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 let dic = ["title":title, "detail":detail] as [String: Any]
                 
                 wordList.append(dic as NSDictionary)
-                print(wordList)
-                print(result)
             }
         } catch {
             print("read error", error)

@@ -120,8 +120,16 @@
                         <viewLayoutGuide key="safeArea" id="Pc8-N4-E8R"/>
                     </view>
                     <navigationItem key="navigationItem" title="更新" id="ER1-Ok-X28">
-                        <barButtonItem key="rightBarButtonItem" title="更新" id="aEK-JO-UKH"/>
+                        <barButtonItem key="rightBarButtonItem" title="更新" id="aEK-JO-UKH">
+                            <connections>
+                                <action selector="tapUpdate:" destination="HhH-re-i7K" id="QeA-EB-sgu"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="detail" destination="JNI-Y5-iAD" id="iha-ix-z7d"/>
+                        <outlet property="word" destination="U5C-GQ-Lv7" id="1wz-oX-STE"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="R1t-L3-leU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

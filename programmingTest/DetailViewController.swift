@@ -31,6 +31,8 @@ class DetailViewController: UIViewController {
     
     @IBAction func tapUpdate(_ sender: Any) {
         updateCoreData()
+        
+        self.navigationController?.popViewController(animated: true)
     }
     
     func getSelectedWord() {
@@ -68,7 +70,27 @@ class DetailViewController: UIViewController {
     }
     
     func updateCoreData() {
+        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
         
+        let manageContext = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title = %@", selectedWord["title"]!)
+        
+        fetchRequest.predicate = predicate
+        
+        do {
+            let fetchResults = try manageContext.fetch(fetchRequest)
+            
+            for result in fetchResults {
+                result.title = word.text!
+                result.detail = detail.text!
+            }
+            try manageContext.save()
+        } catch {
+            print("read error:", error)
+        }
     }
     
 }

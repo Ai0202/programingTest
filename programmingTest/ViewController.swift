@@ -20,6 +20,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var count:Int = 0
     
+    let wordsManage = WordsManage()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,7 +33,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        readWords()
+        wordList = wordsManage.readAll()
         
         tableView.reloadData()
     }
@@ -62,7 +64,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let title = dic["title"] as! String
             
             //CoreDataから削除
-            deleteWord(title: title)
+            wordsManage.delete(title: title)
             
             //表示用の配列の削除
             wordList.remove(at: indexPath.row)
@@ -77,61 +79,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let DetailVC = segue.destination as! DetailViewController
             
             DetailVC.selectedNumber = count
-        }
-    }
-    
-    func readWords() {
-        //AppDelegateのインスタンス化
-        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
-        
-        let manageContext = appDelegate.persistentContainer.viewContext
-        
-        //取り出し
-        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
-        
-        do {
-            let fetchResults = try manageContext.fetch(fetchRequest)
-            
-            wordList = []
-            
-            for result in fetchResults {
-                
-                //1件ずつ取り出し
-                let title:String? = result.value(forKey: "title") as? String
-                let detail:String? = result.value(forKey: "detail") as? String
-                
-                let dic = ["title":title, "detail":detail] as [String: Any]
-                
-                wordList.append(dic as NSDictionary)
-            }
-        } catch {
-            print("read error", error)
-        }
-    }
-
-    func deleteWord(title:String) {
-        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
-        
-        let manageContext = appDelegate.persistentContainer.viewContext
-        
-        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
-        
-        let predicate = NSPredicate(format: "title = %@", title)
-        
-        fetchRequest.predicate = predicate
-        
-        do {
-            let fetchResults = try manageContext.fetch(fetchRequest)
-            
-            for result in fetchResults {
-//                let title:String? = result.value(forKey: "title") as? String
-//                let detail:String? = result.value(forKey: "detail") as? String
-                
-                manageContext.delete(result)
-            }
-            try manageContext.save() //削除した状態を保存
-        } catch {
-            print("read error:", error)
         }
     }
 }

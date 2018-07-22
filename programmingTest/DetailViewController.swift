@@ -19,78 +19,26 @@ class DetailViewController: UIViewController {
     
     var selectedWord = [String: String]()
     
+    let wordsManage = WordsManage()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        getSelectedWord()
+        selectedWord = wordsManage.getSelected(selectedNumber: selectedNumber)
         
         setWord()
         
     }
     
-    
     @IBAction func tapUpdate(_ sender: Any) {
-        updateCoreData()
+        wordsManage.update(originalTitle: selectedWord["title"]!, newTitle: word.text!, newDetail: detail.text!)
         
         self.navigationController?.popViewController(animated: true)
-    }
-    
-    func getSelectedWord() {
-        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
-        
-        let manageContext = appDelegate.persistentContainer.viewContext
-        
-        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
-        
-        do {
-            let fetchResults = try manageContext.fetch(fetchRequest)
-            
-            var count = 0
-            for result in fetchResults {
-                
-                if count == selectedNumber {
-                    //1件ずつ取り出し
-                    let title:String? = result.value(forKey: "title") as? String
-                    let detail:String? = result.value(forKey: "detail") as? String
-                    
-                    selectedWord = ["title":title, "detail":detail] as! [String: String]
-                }
-                
-                count = count + 1
-            }
-            
-        } catch {
-            print("read error", error)
-        }
     }
     
     func setWord() {
         word.text! = selectedWord["title"]!
         detail.text! = selectedWord["detail"]!
-    }
-    
-    func updateCoreData() {
-        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
-        
-        let manageContext = appDelegate.persistentContainer.viewContext
-        
-        let fetchRequest:NSFetchRequest<Words> = Words.fetchRequest()
-        
-        let predicate = NSPredicate(format: "title = %@", selectedWord["title"]!)
-        
-        fetchRequest.predicate = predicate
-        
-        do {
-            let fetchResults = try manageContext.fetch(fetchRequest)
-            
-            for result in fetchResults {
-                result.title = word.text!
-                result.detail = detail.text!
-            }
-            try manageContext.save()
-        } catch {
-            print("read error:", error)
-        }
     }
     
 }

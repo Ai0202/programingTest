@@ -20,7 +20,6 @@ class CreateViewController: UIViewController {
     @IBAction func tapDoneBtn(_ sender: Any) {
         wordsManage.create(title: word.text!, detail: detail.text!)
         
-        //一つの前の画面に戻る
         self.navigationController?.popViewController(animated: true)
     }
 
